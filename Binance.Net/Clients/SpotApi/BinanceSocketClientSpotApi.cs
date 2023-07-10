@@ -11,6 +11,7 @@ using Binance.Net.Objects.Models.Spot;
 using Binance.Net.Objects.Options;
 using CryptoExchange.Net;
 using CryptoExchange.Net.Authentication;
+using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
 using Microsoft.Extensions.Logging;
@@ -124,35 +125,27 @@ namespace Binance.Net.Clients.SpotApi
         /// <inheritdoc />
         protected override bool HandleSubscriptionResponse(SocketConnection s, SocketSubscription subscription, object request, JToken message, out CallResult<object>? callResult)
         {
-            callResult = null;
-            if (message.Type != JTokenType.Object)
-                return false;
+            var result = message;
 
-            var id = message["id"];
-            if (id == null)
-                return false;
-
-            var bRequest = (BinanceSocketRequest)request;
-            if ((int)id != bRequest.Id)
-                return false;
-
-            var result = message["result"];
-            if (result != null && result.Type == JTokenType.Null)
+            if (result != null && message.Count() > 0)
             {
+                if (message.Value<bool>("hasError"))
+                {
+
+                    callResult = new CallResult<object>(new ServerError("Unknown error: " + message.Value<string>("data")));
+                    return true;
+                }
+
                 _logger.Log(LogLevel.Trace, $"Socket {s.SocketId} Subscription completed");
+
+
+
                 callResult = new CallResult<object>(new object());
                 return true;
             }
 
-            var error = message["error"];
-            if (error == null)
-            {
-                callResult = new CallResult<object>(new ServerError("Unknown error: " + message));
-                return true;
-            }
-
-            callResult = new CallResult<object>(new ServerError(error["code"]!.Value<int>(), error["msg"]!.ToString()));
-            return true;
+            callResult = new CallResult<object>(new ServerError("Unknown error: " + message));
+            return false;
         }
 
         /// <inheritdoc />
@@ -229,5 +222,9 @@ namespace Binance.Net.Clients.SpotApi
             return BinanceHelpers.ValidateTradeRules(_logger, ApiOptions.TradeRulesBehaviour, _exchangeInfo, symbol, quantity, quoteQuantity, price, stopPrice, type);
         }
 
+        protected override IWebsocket CreateSocket(string address)
+        {
+            return new SignalRCryptoExchangeWebSocketClient(_logger, GetWebSocketParameters(address), null);
+        }
     }
 }
