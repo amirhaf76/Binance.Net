@@ -1,5 +1,5 @@
-using Binance.Net;
-using Binance.Net.Interfaces.Clients;
+using HitoBit.Net;
+using HitoBit.Net.Interfaces.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddBinance();
+builder.Services.AddHitoBit();
 
 var app = builder.Build();
 
@@ -21,7 +21,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/price/{symbol}", async (IBinanceRestClient restClient, string symbol) =>
+app.MapGet("/price/{symbol}", async (IHitoBitRestClient restClient, string symbol) =>
 {
     var price = await restClient.SpotApi.ExchangeData.GetPriceAsync(symbol);
     return price.Data;
