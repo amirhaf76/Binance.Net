@@ -44,14 +44,14 @@
         /// </summary>
         public static BinanceApiAddresses Default = new BinanceApiAddresses
         {
-            RestClientAddress = "https://api.binance.com",
-            SocketClientStreamAddress = "wss://stream.binance.com:9443/",
-            SocketClientApiAddress = "wss://ws-api.binance.com:443/",
-            BlvtSocketClientAddress = "wss://nbstream.binance.com/",
-            UsdFuturesRestClientAddress = "https://fapi.binance.com",
-            UsdFuturesSocketClientAddress = "wss://fstream.binance.com/",
-            CoinFuturesRestClientAddress = "https://dapi.binance.com",
-            CoinFuturesSocketClientAddress = "wss://dstream.binance.com/",
+            RestClientAddress = "https://api.hitobit.com",
+            SocketClientStreamAddress = "https://stream.hitobit.com",
+            SocketClientApiAddress = "https://stream.hitobit.com",
+            BlvtSocketClientAddress = null,
+            UsdFuturesRestClientAddress = null,
+            UsdFuturesSocketClientAddress = null,
+            CoinFuturesRestClientAddress = null,
+            CoinFuturesSocketClientAddress = null,
         };
 
         /// <summary>
